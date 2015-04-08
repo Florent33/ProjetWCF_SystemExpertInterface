@@ -17,19 +17,17 @@ namespace ProjetWebService_SystemeExpert
             InitializeComponent();
         }
 
-        private void listView1_SelectedIndexChanged(object sender, EventArgs e)
-        {
+        /*
+             * Appel service web
+             * récupérer question
+             * objet question, reponse
+             */
+          // Faire la requête pour demander la question
+            // Stocker les valeurs en html ou en xml
+            // Reponse: http reponse avec id
 
-        }
 
-        private void label1_Click(object sender, EventArgs e)
-        {
 
-        }
 
-        private void textBox2_TextChanged(object sender, EventArgs e)
-        {
-
-        }
     }
 }
