@@ -74,6 +74,7 @@
             this.question_textBox1.Name = "question_textBox1";
             this.question_textBox1.Size = new System.Drawing.Size(350, 20);
             this.question_textBox1.TabIndex = 3;
+            this.question_textBox1.TextChanged += new System.EventHandler(this.question_textBox1_TextChanged);
             // 
             // reponse_textBox2
             // 
@@ -81,6 +82,7 @@
             this.reponse_textBox2.Name = "reponse_textBox2";
             this.reponse_textBox2.Size = new System.Drawing.Size(350, 20);
             this.reponse_textBox2.TabIndex = 4;
+            this.reponse_textBox2.TextChanged += new System.EventHandler(this.reponse_textBox2_TextChanged);
             // 
             // prochaineQuestion_button1
             // 
@@ -91,6 +93,7 @@
             this.prochaineQuestion_button1.TabIndex = 5;
             this.prochaineQuestion_button1.Text = "Prochaine question";
             this.prochaineQuestion_button1.UseVisualStyleBackColor = true;
+            this.prochaineQuestion_button1.Click += new System.EventHandler(this.prochaineQuestion_button1_Click);
             // 
             // envoyerReponse_button2
             // 
@@ -100,6 +103,7 @@
             this.envoyerReponse_button2.TabIndex = 6;
             this.envoyerReponse_button2.Text = "Envoyer réponse";
             this.envoyerReponse_button2.UseVisualStyleBackColor = true;
+            this.envoyerReponse_button2.Click += new System.EventHandler(this.envoyerReponse_button2_Click);
             // 
             // Form1
             // 
