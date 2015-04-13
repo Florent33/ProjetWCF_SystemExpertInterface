@@ -20,15 +20,13 @@ namespace ProjetWebService_SystemeExpert
         }
 
         /*
-             * Appel service web
-             * récupérer question
-             * objet question, reponse
-             */
+         * Appel service web
+         * récupérer question
+         * objet question, reponse
+        */
         // Faire la requête pour demander la question
         // Stocker les valeurs en html ou en xml
         // Reponse: http reponse avec id
-
-
 
         private void question_textBox1_TextChanged(object sender, EventArgs e)
         {
@@ -57,9 +55,6 @@ namespace ProjetWebService_SystemeExpert
             {
                 postStream.Write(byteData, 0, byteData.Length);
             }
-
-            /*request.Credentials = CredentialCache.DefaultCredentials;
-            HttpWebResponse response = (HttpWebResponse)request.GetResponse();*/
 
             using (Stream postStream = request.GetRequestStream())
             {
