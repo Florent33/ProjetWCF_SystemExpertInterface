@@ -31,8 +31,8 @@
             this.titre_label1 = new System.Windows.Forms.Label();
             this.question_label2 = new System.Windows.Forms.Label();
             this.reponse_label3 = new System.Windows.Forms.Label();
-            this.question_textBox1 = new System.Windows.Forms.TextBox();
-            this.reponse_textBox2 = new System.Windows.Forms.TextBox();
+            this.txt_question = new System.Windows.Forms.TextBox();
+            this.txt_reponse = new System.Windows.Forms.TextBox();
             this.prochaineQuestion_button1 = new System.Windows.Forms.Button();
             this.envoyerReponse_button2 = new System.Windows.Forms.Button();
             this.SuspendLayout();
@@ -68,21 +68,21 @@
             this.reponse_label3.TabIndex = 2;
             this.reponse_label3.Text = "Réponse :";
             // 
-            // question_textBox1
+            // txt_question
             // 
-            this.question_textBox1.Location = new System.Drawing.Point(275, 114);
-            this.question_textBox1.Name = "question_textBox1";
-            this.question_textBox1.Size = new System.Drawing.Size(350, 20);
-            this.question_textBox1.TabIndex = 3;
-            this.question_textBox1.TextChanged += new System.EventHandler(this.question_textBox1_TextChanged);
+            this.txt_question.Location = new System.Drawing.Point(275, 114);
+            this.txt_question.Name = "txt_question";
+            this.txt_question.Size = new System.Drawing.Size(350, 20);
+            this.txt_question.TabIndex = 3;
+            this.txt_question.TextChanged += new System.EventHandler(this.question_textBox1_TextChanged);
             // 
-            // reponse_textBox2
+            // txt_reponse
             // 
-            this.reponse_textBox2.Location = new System.Drawing.Point(275, 180);
-            this.reponse_textBox2.Name = "reponse_textBox2";
-            this.reponse_textBox2.Size = new System.Drawing.Size(350, 20);
-            this.reponse_textBox2.TabIndex = 4;
-            this.reponse_textBox2.TextChanged += new System.EventHandler(this.reponse_textBox2_TextChanged);
+            this.txt_reponse.Location = new System.Drawing.Point(275, 180);
+            this.txt_reponse.Name = "txt_reponse";
+            this.txt_reponse.Size = new System.Drawing.Size(350, 20);
+            this.txt_reponse.TabIndex = 4;
+            this.txt_reponse.TextChanged += new System.EventHandler(this.reponse_textBox2_TextChanged);
             // 
             // prochaineQuestion_button1
             // 
@@ -111,13 +111,14 @@
             this.ClientSize = new System.Drawing.Size(884, 361);
             this.Controls.Add(this.envoyerReponse_button2);
             this.Controls.Add(this.prochaineQuestion_button1);
-            this.Controls.Add(this.reponse_textBox2);
-            this.Controls.Add(this.question_textBox1);
+            this.Controls.Add(this.txt_reponse);
+            this.Controls.Add(this.txt_question);
             this.Controls.Add(this.reponse_label3);
             this.Controls.Add(this.question_label2);
             this.Controls.Add(this.titre_label1);
             this.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
             this.Name = "Form1";
+            this.Load += new System.EventHandler(this.Form1_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -128,8 +129,8 @@
         private System.Windows.Forms.Label titre_label1;
         private System.Windows.Forms.Label question_label2;
         private System.Windows.Forms.Label reponse_label3;
-        private System.Windows.Forms.TextBox question_textBox1;
-        private System.Windows.Forms.TextBox reponse_textBox2;
+        private System.Windows.Forms.TextBox txt_question;
+        private System.Windows.Forms.TextBox txt_reponse;
         private System.Windows.Forms.Button prochaineQuestion_button1;
         private System.Windows.Forms.Button envoyerReponse_button2;
 

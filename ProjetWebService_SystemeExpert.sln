@@ -3,6 +3,27 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProjetWebService_SystemeExpert", "ProjetWebService_SystemeExpert\ProjetWebService_SystemeExpert.csproj", "{AC54E95E-BA57-4BD1-8907-E9A730CA95A6}"
 EndProject
+Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "ClientWebSystemExpert", "ClientWebSystemExpert\", "{FA260DBE-A277-4CF1-8F13-C5AE5CBFA0AD}"
+	ProjectSection(WebsiteProperties) = preProject
+		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.5"
+		Debug.AspNetCompiler.VirtualPath = "/ClientWebSystemExpert"
+		Debug.AspNetCompiler.PhysicalPath = "ClientWebSystemExpert\"
+		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\ClientWebSystemExpert\"
+		Debug.AspNetCompiler.Updateable = "true"
+		Debug.AspNetCompiler.ForceOverwrite = "true"
+		Debug.AspNetCompiler.FixedNames = "false"
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.VirtualPath = "/ClientWebSystemExpert"
+		Release.AspNetCompiler.PhysicalPath = "ClientWebSystemExpert\"
+		Release.AspNetCompiler.TargetPath = "PrecompiledWeb\ClientWebSystemExpert\"
+		Release.AspNetCompiler.Updateable = "true"
+		Release.AspNetCompiler.ForceOverwrite = "true"
+		Release.AspNetCompiler.FixedNames = "false"
+		Release.AspNetCompiler.Debug = "False"
+		VWDPort = "50984"
+		DefaultWebSiteLanguage = "Visual C#"
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -13,6 +34,10 @@ Global
 		{AC54E95E-BA57-4BD1-8907-E9A730CA95A6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AC54E95E-BA57-4BD1-8907-E9A730CA95A6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AC54E95E-BA57-4BD1-8907-E9A730CA95A6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FA260DBE-A277-4CF1-8F13-C5AE5CBFA0AD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FA260DBE-A277-4CF1-8F13-C5AE5CBFA0AD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FA260DBE-A277-4CF1-8F13-C5AE5CBFA0AD}.Release|Any CPU.ActiveCfg = Debug|Any CPU
+		{FA260DBE-A277-4CF1-8F13-C5AE5CBFA0AD}.Release|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

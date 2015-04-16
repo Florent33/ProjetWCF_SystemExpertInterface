@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -36,20 +37,69 @@ namespace ProjetWebService_SystemeExpert
             }
         }
 
-        private static HttpWebRequest ExecuterReqHttp(string url, string metode = null, string contentType = null, string acceptRepresentation = null)
+        public static HttpWebRequest ExecuterReqHttp(string url, string metode = null, string contentType = null, string acceptRepresentation = null)
         {
             HttpWebRequest monReq = (System.Net.HttpWebRequest)System.Net.WebRequest.Create(url);
-
             ChargerParametresRequete(ref monReq, metode, contentType, acceptRepresentation);
 
             return monReq;
         }
 
-        private static void ChargerParametresRequete(ref HttpWebRequest monReq, string metode, string contentType, string acceptRepresentation)
+        public static HttpWebRequest ExecuterReqHttp(string url, out int codeStatut, string metode = null, string contentType = null, string acceptRepresentation = null, NameValueCollection parametres = null)
+        {
+            HttpWebRequest monReq = (System.Net.HttpWebRequest)System.Net.WebRequest.Create(url);
+            ChargerParametresRequete(ref monReq, metode, contentType, acceptRepresentation, parametres);
+
+            HttpWebResponse uneReponse = (HttpWebResponse) monReq.GetResponse();
+
+            codeStatut = uneReponse.StatusCode.GetHashCode();
+
+            return monReq;
+        }
+
+
+
+        private static void ChargerParametresRequete(ref HttpWebRequest monReq, string metode, string contentType, string acceptRepresentation, NameValueCollection parametres = null)
         {
             DefinirMetodeRequete(metode, ref monReq);
             DefinirContentType(contentType, ref monReq);
             DefinirRepresentationAcceptee(monReq, acceptRepresentation);
+            DefinirParametresCache(monReq, parametres);
+        }
+
+        private static void DefinirParametresCache(HttpWebRequest monReq, NameValueCollection parametres)
+        {
+            Stream mesDatas;
+            byte[] encodageBytesParams = GenererParametresEncodeBytes(monReq, parametres, out mesDatas);
+
+            mesDatas.Write(encodageBytesParams, 0, encodageBytesParams.Length);
+            mesDatas.Close();
+        }
+
+        private static byte[] GenererParametresEncodeBytes(HttpWebRequest monReq, NameValueCollection parametres, out Stream mesDatas)
+        {
+            byte[] encodageBytesParams;
+            mesDatas = monReq.GetRequestStream();
+            StringBuilder monBuilderParams = new StringBuilder();
+            bool premierParamPasse = false;
+
+            foreach (var item in parametres.AllKeys)
+            {
+                if (premierParamPasse)
+                {
+                    monBuilderParams.Append(string.Format("{0}={1}", item, parametres[item]));
+                    premierParamPasse = true;
+                }
+                else
+                {
+                    monBuilderParams.Append(string.Format("&amp{0}={1}", item, parametres[item]));
+                }
+            }
+
+            ASCIIEncoding ascii = new ASCIIEncoding();
+            encodageBytesParams = ascii.GetBytes(monBuilderParams.ToString());
+
+            return encodageBytesParams;
         }
 
         private static void DefinirRepresentationAcceptee(HttpWebRequest monReq, string acceptRepresentation)
@@ -64,7 +114,7 @@ namespace ProjetWebService_SystemeExpert
             }
         }
 
-        public static Question GetQuestion(string idQuestion, string metodeRequete = null, string contentType = null, string representationTexte = null)
+        public static Question GetQuestion(int idQuestion, string metodeRequete = null, string contentType = null, string representationTexte = null)
         {
             HttpWebRequest monReq = ExecuterReqHttp(string.Format("http://localhost:8002/i2037/Question?question_id={0}", idQuestion), metodeRequete, contentType, representationTexte);
 
@@ -80,8 +130,35 @@ namespace ProjetWebService_SystemeExpert
             return maQuestion;
         }
 
+        public static Question GetQuestion(string url, string metodeRequete = null, string contentType = null, string representationTexte = null)
+        {
+            HttpWebRequest monReq = ExecuterReqHttp(url, metodeRequete, contentType, representationTexte);
+
+            StringBuilder chaineReponseBuilded = new StringBuilder();
+            XmlSerializer xs;
+
+            xs = new XmlSerializer(typeof(Question));
+
+            TextReader monTextReader = new StreamReader(monReq.GetResponse().GetResponseStream());
+
+            Question maQuestion = (Question)xs.Deserialize(monTextReader);
+
+            return maQuestion;
+        }
+
         public static Reponse GetReponse(string ip, string secret, string numeroQuestion, string token)
         {
+            //string urlPath = "http://localhost:8002/Question?question_id=1";
+            //string request = urlPath + "indexTest.html/org/put_org_form";
+            //XmlSerializer xs1;
+            //xs1 = new XmlSerializer(typeof(Reponse));
+            //Reponse maReponse = (Reponse)xs1.Serialize(
+            //WebRequest webRequest = WebRequest.Create(request);
+            //webRequest.Method = "PUT";
+            //webRequest.ContentType = "application/x-www-form-urlencoded; charset=utf-8";
+            //webRequest.ContentLength = 65;
+            //WebResponse webResponse = webRequest.GetResponse();
+
             //HttpWebRequest monReq = ExecuterReqHttp(string.Format("http://{0}:8080/api/parties/{1}/questions/{2}?token={3}", ip, secret, numeroQuestion, token));           
             //string reponseString = ExtraireReponseBrut(monReq);
             //Reponse reponseQuestion = JsonConvert.DeserializeObject<Reponse>(reponseString);
@@ -94,7 +171,7 @@ namespace ProjetWebService_SystemeExpert
             //{
             //    var data = new NameValueCollection();
             //    data["reponse"] = JsonConvert.SerializeObject(maReponse);
-            //    var response = wb.UploadValues(string.Format("http://{0}:8080/api/parties/{1}/reponses", ip, secret), "POST", data);
+            //    var response = wb.UploadValues(string.Format("http://{0}:8080/api/parties/{1}/reponses", ip, secret), data);
             //}
             //DefinirMetodeRequete("post", ref monReq);
             //DefinirContentType("application/json", ref monReq);
@@ -111,21 +188,21 @@ namespace ProjetWebService_SystemeExpert
             return reponseString;
         }
 
-        public static string GetBookDetail(string ip, string secret, string numeroQuestion, string token)
-        {
-            System.Net.HttpWebRequest monReq = (System.Net.HttpWebRequest)System.Net.WebRequest.Create(string.Format("http://{0}:8080/api/parties/[votre_secret]/questions/[numéro_question]?token=[token_réponse_précédente]", ip, secret, numeroQuestion, token));
+        //public static string GetBookDetail(string ip, string secret, string numeroQuestion, string token)
+        //{
+        //    System.Net.HttpWebRequest monReq = (System.Net.HttpWebRequest)System.Net.WebRequest.Create(string.Format("http://{0}:8080/api/parties/[votre_secret]/questions/[numéro_question]?token=[token_réponse_précédente]", ip, secret, numeroQuestion, token));
 
-            monReq.Method = "GET";
-            monReq.ContentType = "application/x-www-form-urlencoded";
+        //    monReq.Method = "GET";
+        //    monReq.ContentType = "application/x-www-form-urlencoded";
 
-            System.IO.StreamReader monReader = new System.IO.StreamReader(monReq.GetResponse().GetResponseStream());
+        //    System.IO.StreamReader monReader = new System.IO.StreamReader(monReq.GetResponse().GetResponseStream());
 
-            string reponseString = monReader.ReadToEnd();
+        //    string reponseString = monReader.ReadToEnd();
 
-            monReader.Close();
+        //    monReader.Close();
 
-            return reponseString;
-        }
+        //    return reponseString;
+        //}
 
         public static object[] secret { get; set; }
 
