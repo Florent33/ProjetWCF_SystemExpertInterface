@@ -32,15 +32,13 @@ namespace ProjetWebService_SystemeExpert
         {
             this.txt_question.Text = "Récupérer la réponse...";
 
-            maQuestion = HttpServiceWeb.GetQuestion(1, "GET", null, "text/xml");
+            maQuestion = HttpServiceWeb.GetQuestion(1, "GET", "text/html", "text/xml");
             txt_question.Text = maQuestion.QuestionContenu;
             txt_reponse.Text = maQuestion.ReponseString.ReponseContenu;
         }
 
         private void envoyerReponse_button2_Click(object sender, EventArgs e)
         {
-            txt_reponse.Text = "Envoyer la réponse...";
-
             //maQuestion = HttpServiceWeb.
             //txt_question.Text = maQuestion.QuestionContenu;
             //txt_reponse.Text = maQuestion.ReponseString.ReponseContenu;
@@ -64,7 +62,7 @@ namespace ProjetWebService_SystemeExpert
             lesParametres.Add("reponse_contenu", txt_reponse.Text);
 
             int CodeRetour = 200;
-            HttpWebRequest uneReq = HttpServiceWeb.ExecuterReqHttp(maQuestion.LienRessource, out CodeRetour, "PUT", "text/xml", "text/xml", lesParametres);
+            HttpWebRequest uneReq = HttpServiceWeb.ExecuterReqHttp(maQuestion.LienRessource, out CodeRetour, "PUT", "text/json", "text/json", lesParametres);
 
             if (!(CodeRetour >= 200 && CodeRetour < 200))
             {

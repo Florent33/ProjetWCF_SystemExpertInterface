@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Serialization;
+using Newtonsoft;
 
 namespace ProjetWebService_SystemeExpert
 {
@@ -64,35 +65,39 @@ namespace ProjetWebService_SystemeExpert
             DefinirMetodeRequete(metode, ref monReq);
             DefinirContentType(contentType, ref monReq);
             DefinirRepresentationAcceptee(monReq, acceptRepresentation);
-            DefinirParametresCache(monReq, parametres);
+            if (metode != "GET")
+            {
+                DefinirParametresCache(monReq, parametres); 
+            }
+            
         }
 
         private static void DefinirParametresCache(HttpWebRequest monReq, NameValueCollection parametres)
         {
-            Stream mesDatas;
-            byte[] encodageBytesParams = GenererParametresEncodeBytes(monReq, parametres, out mesDatas);
+            Stream mesDatas = null;
+            byte[] encodageBytesParams = GenererParametresEncodeBytes(monReq, parametres, ref mesDatas);
 
             mesDatas.Write(encodageBytesParams, 0, encodageBytesParams.Length);
             mesDatas.Close();
         }
 
-        private static byte[] GenererParametresEncodeBytes(HttpWebRequest monReq, NameValueCollection parametres, out Stream mesDatas)
+        private static byte[] GenererParametresEncodeBytes(HttpWebRequest monReq, NameValueCollection parametres, ref Stream mesDatas)
         {
             byte[] encodageBytesParams;
             mesDatas = monReq.GetRequestStream();
             StringBuilder monBuilderParams = new StringBuilder();
-            bool premierParamPasse = false;
+            bool premierParamPasse = true;
 
             foreach (var item in parametres.AllKeys)
             {
                 if (premierParamPasse)
                 {
                     monBuilderParams.Append(string.Format("{0}={1}", item, parametres[item]));
-                    premierParamPasse = true;
+                    premierParamPasse = false;
                 }
                 else
                 {
-                    monBuilderParams.Append(string.Format("&amp{0}={1}", item, parametres[item]));
+                    monBuilderParams.Append(string.Format("&{0}={1}", item, parametres[item]));
                 }
             }
 
@@ -116,18 +121,21 @@ namespace ProjetWebService_SystemeExpert
 
         public static Question GetQuestion(int idQuestion, string metodeRequete = null, string contentType = null, string representationTexte = null)
         {
-            HttpWebRequest monReq = ExecuterReqHttp(string.Format("http://localhost:8002/i2037/Question?question_id={0}", idQuestion), metodeRequete, contentType, representationTexte);
+            HttpWebRequest monReq = ExecuterReqHttp(string.Format("http://localhost:52810/i2037/Question?question_id={0}", idQuestion), metodeRequete, contentType, representationTexte);
 
             StringBuilder chaineReponseBuilded = new StringBuilder();
             XmlSerializer xs;
 
             xs = new XmlSerializer(typeof(Question));
             
-            TextReader monTextReader = new StreamReader(monReq.GetResponse().GetResponseStream());
+            TextReader monTextReader = new StreamReader(monReq.GetResponse().GetResponseStream(), Encoding.UTF8);
 
-            Question maQuestion = (Question)xs.Deserialize(monTextReader);
 
-            return maQuestion;
+            Question uneQuestion = Newtonsoft.Json.JsonConvert.DeserializeObject<Question>(ExtraireReponseBrut(monReq));
+
+            //Question maQuestion = (Question)xs.Deserialize(monTextReader);
+
+            return uneQuestion;
         }
 
         public static Question GetQuestion(string url, string metodeRequete = null, string contentType = null, string representationTexte = null)
