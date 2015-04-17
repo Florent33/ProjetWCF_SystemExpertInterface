@@ -22,20 +22,7 @@ namespace ProjetWebService_SystemeExpert
         private void question_textBox1_TextChanged(object sender, EventArgs e) { }
         private void reponse_textBox2_TextChanged(object sender, EventArgs e) { }
         private void Form1_Load(object sender, EventArgs e) {
-            StringBuilder monBuilderParams = new StringBuilder();
-
-            using (var client = new System.Net.WebClient())
-            {
-                client.Headers.Add("Content-Type", "text/html");
-                client.Headers.Add("Accept", "text/json");
-                client.Encoding = UTF8Encoding.UTF8;
-                monBuilderParams.Append(client.DownloadString("http://localhost:2441/Quest/Question?question_id=0"));
-
-                maQuestion = Newtonsoft.Json.JsonConvert.DeserializeObject<Question>(monBuilderParams.ToString());
-            }
-
-            txt_question.Text = "";
-            txt_reponse.Text = "";
+            InitialiserQuestionDepartFictive();
         }
 
         private void InitialiserQuestionDepartFictive()
@@ -63,7 +50,7 @@ namespace ProjetWebService_SystemeExpert
 
         private void prochaineQuestion_button1_Click(object sender, EventArgs e)
         {
-            if (string.IsNullOrEmpty(maQuestion.LienRessourceNext))
+            if (string.IsNullOrEmpty(maQuestion.LienRessourceNext) || maQuestion.LienRessourceNext.EndsWith("="))
             {
                 MessageBox.Show("Il n'y a plus de question");
             }
@@ -135,8 +122,16 @@ namespace ProjetWebService_SystemeExpert
 
             maQuestion = Newtonsoft.Json.JsonConvert.DeserializeObject<Question>(monBuilderParams.ToString());
 
-            txt_question.Text = maQuestion.QuestionContenu;
-            txt_reponse.Text = "";
+            if (string.IsNullOrEmpty(maQuestion.LienRessourceNext))
+            {
+                MessageBox.Show("Il n'y a plus de question");
+                InitialiserQuestionDepartFictive();
+            }
+            else
+            {
+                txt_question.Text = maQuestion.QuestionContenu;
+                txt_reponse.Text = "";
+            }
         }
     }
 }
