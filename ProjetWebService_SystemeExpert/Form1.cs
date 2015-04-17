@@ -18,6 +18,8 @@ namespace ProjetWebService_SystemeExpert
     {
         protected Question maQuestion;
         protected Reponse maReponse;
+        protected string _urlServer;
+        public string UrlServerInit { get { return string.Format("{0}/{1}", _urlServer, "Question?question_id=0"); } }
 
         private void question_textBox1_TextChanged(object sender, EventArgs e) { }
         private void reponse_textBox2_TextChanged(object sender, EventArgs e) { }
@@ -34,7 +36,15 @@ namespace ProjetWebService_SystemeExpert
                 client.Headers.Add("Content-Type", "text/html");
                 client.Headers.Add("Accept", "text/json");
                 client.Encoding = UTF8Encoding.UTF8;
-                monBuilderParams.Append(client.DownloadString("http://localhost:2441/Quest/Question?question_id=0"));
+
+                Uri monUri = new Uri(UrlServerInit);
+
+                if (WebRequest.DefaultWebProxy.IsBypassed(monUri))
+                {
+                    client.Proxy = WebRequest.GetSystemWebProxy();
+                }
+
+                monBuilderParams.Append(client.DownloadString(UrlServerInit));
 
                 maQuestion = Newtonsoft.Json.JsonConvert.DeserializeObject<Question>(monBuilderParams.ToString());
             }
@@ -63,6 +73,14 @@ namespace ProjetWebService_SystemeExpert
                     client.Headers.Add("Content-Type", "text/html");
                     client.Headers.Add("Accept", "text/json");
                     client.Encoding = UTF8Encoding.UTF8;
+
+                    Uri monUri = new Uri(maQuestion.LienRessourceNext);
+
+                    if (WebRequest.DefaultWebProxy.IsBypassed(monUri))
+                    {
+                        client.Proxy = WebRequest.GetSystemWebProxy();
+                    }
+                    
                     monBuilderParams.Append(client.DownloadString(maQuestion.LienRessourceNext));
 
                     maQuestion = Newtonsoft.Json.JsonConvert.DeserializeObject<Question>(monBuilderParams.ToString());
@@ -115,6 +133,13 @@ namespace ProjetWebService_SystemeExpert
             {
                 client.Headers.Add("Content-Type", "application/x-www-form-urlencoded");
                 client.Headers.Add("Accept", "text/json");
+                Uri monUri = new Uri(maQuestion.LienRessource);
+
+                if (WebRequest.DefaultWebProxy.IsBypassed(monUri))
+                {
+                    client.Proxy = WebRequest.GetSystemWebProxy();
+                }
+
                 repReq = client.UploadData(maQuestion.LienRessource, "PUT", encodageBytesParams);
             }
 
@@ -132,6 +157,16 @@ namespace ProjetWebService_SystemeExpert
                 txt_question.Text = maQuestion.QuestionContenu;
                 txt_reponse.Text = "";
             }
+        }
+
+        private void adtresseServeurQuestionToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ConfigServerQuestion maFormConfig = new ConfigServerQuestion();
+            maFormConfig.UrlServiceWeb = _urlServer;
+
+            maFormConfig.ShowDialog();
+
+            _urlServer = maFormConfig.UrlServiceWeb;
         }
     }
 }

@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.titre_label1 = new System.Windows.Forms.Label();
             this.question_label2 = new System.Windows.Forms.Label();
             this.reponse_label3 = new System.Windows.Forms.Label();
@@ -35,6 +36,10 @@
             this.txt_reponse = new System.Windows.Forms.TextBox();
             this.prochaineQuestion_button1 = new System.Windows.Forms.Button();
             this.envoyerReponse_button2 = new System.Windows.Forms.Button();
+            this.toolStrip1 = new System.Windows.Forms.ToolStrip();
+            this.tsp_config = new System.Windows.Forms.ToolStripSplitButton();
+            this.adtresseServeurQuestionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // titre_label1
@@ -105,10 +110,39 @@
             this.envoyerReponse_button2.UseVisualStyleBackColor = true;
             this.envoyerReponse_button2.Click += new System.EventHandler(this.envoyerReponse_button2_Click);
             // 
+            // toolStrip1
+            // 
+            this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.tsp_config});
+            this.toolStrip1.Location = new System.Drawing.Point(0, 0);
+            this.toolStrip1.Name = "toolStrip1";
+            this.toolStrip1.Size = new System.Drawing.Size(884, 25);
+            this.toolStrip1.TabIndex = 7;
+            this.toolStrip1.Text = "toolStrip1";
+            // 
+            // tsp_config
+            // 
+            this.tsp_config.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.adtresseServeurQuestionToolStripMenuItem});
+            this.tsp_config.Image = ((System.Drawing.Image)(resources.GetObject("tsp_config.Image")));
+            this.tsp_config.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tsp_config.Name = "tsp_config";
+            this.tsp_config.Size = new System.Drawing.Size(75, 22);
+            this.tsp_config.Text = "Config";
+            this.tsp_config.ToolTipText = "Config";
+            // 
+            // adtresseServeurQuestionToolStripMenuItem
+            // 
+            this.adtresseServeurQuestionToolStripMenuItem.Name = "adtresseServeurQuestionToolStripMenuItem";
+            this.adtresseServeurQuestionToolStripMenuItem.Size = new System.Drawing.Size(212, 22);
+            this.adtresseServeurQuestionToolStripMenuItem.Text = "Adtresse Serveur Question";
+            this.adtresseServeurQuestionToolStripMenuItem.Click += new System.EventHandler(this.adtresseServeurQuestionToolStripMenuItem_Click);
+            // 
             // Form1
             // 
             this.BackColor = System.Drawing.SystemColors.AppWorkspace;
             this.ClientSize = new System.Drawing.Size(884, 361);
+            this.Controls.Add(this.toolStrip1);
             this.Controls.Add(this.envoyerReponse_button2);
             this.Controls.Add(this.prochaineQuestion_button1);
             this.Controls.Add(this.txt_reponse);
@@ -119,6 +153,8 @@
             this.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
             this.Name = "Form1";
             this.Load += new System.EventHandler(this.Form1_Load);
+            this.toolStrip1.ResumeLayout(false);
+            this.toolStrip1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -133,6 +169,9 @@
         private System.Windows.Forms.TextBox txt_reponse;
         private System.Windows.Forms.Button prochaineQuestion_button1;
         private System.Windows.Forms.Button envoyerReponse_button2;
+        private System.Windows.Forms.ToolStrip toolStrip1;
+        private System.Windows.Forms.ToolStripSplitButton tsp_config;
+        private System.Windows.Forms.ToolStripMenuItem adtresseServeurQuestionToolStripMenuItem;
 
     }
 }
