@@ -31,19 +31,17 @@ namespace ProjetWebService_SystemeExpert
             else
             {
                 UrlServiceWeb = txt_urlServiceWeb.Text;
+                Properties.Settings.Default.urlServer = txt_urlServiceWeb.Text;
+                Properties.Settings.Default.Save();
+
+                Close();
             }
         }
 
         private void ConfigServerQuestion_Load(object sender, EventArgs e)
         {
-            if (string.IsNullOrEmpty(txt_urlServiceWeb.Text))
-            {
-                MessageBox.Show("Merci de saisir l'adresse url du service web");
-            }
-            else
-            {
-                UrlServiceWeb = txt_urlServiceWeb.Text;
-            }
+            UrlServiceWeb = Properties.Settings.Default.urlServer;
+            txt_urlServiceWeb.Text = UrlServiceWeb;
         }
     }
 }

@@ -24,6 +24,7 @@ namespace ProjetWebService_SystemeExpert
         private void question_textBox1_TextChanged(object sender, EventArgs e) { }
         private void reponse_textBox2_TextChanged(object sender, EventArgs e) { }
         private void Form1_Load(object sender, EventArgs e) {
+            _urlServer = Properties.Settings.Default.urlServer;
             InitialiserQuestionDepartFictive();
         }
 
@@ -36,15 +37,47 @@ namespace ProjetWebService_SystemeExpert
                 client.Headers.Add("Content-Type", "text/html");
                 client.Headers.Add("Accept", "text/json");
                 client.Encoding = UTF8Encoding.UTF8;
+                Uri monUri;
 
-                Uri monUri = new Uri(UrlServerInit);
+                try
+                {
+                    monUri = new Uri(UrlServerInit);
+                }
+                catch (Exception)
+                {
+                    ConfigServerQuestion uneFormConfigServ = new ConfigServerQuestion();
+                    uneFormConfigServ.UrlServiceWeb = UrlServerInit;
+                    uneFormConfigServ.ShowDialog();
+                    _urlServer = uneFormConfigServ.UrlServiceWeb;
+                    monUri = new Uri(UrlServerInit);
+                }
+
+                
 
                 if (WebRequest.DefaultWebProxy.IsBypassed(monUri))
                 {
                     client.Proxy = WebRequest.GetSystemWebProxy();
                 }
 
-                monBuilderParams.Append(client.DownloadString(UrlServerInit));
+
+                try
+                {
+                    monBuilderParams.Append(client.DownloadString(UrlServerInit));
+                }
+                catch (Exception e)
+                {
+                    MessageBox.Show(string.Format("Mauvaise url server : \nDétail : {0}", e.Message));
+                    ConfigServerQuestion uneFormConfigServ = new ConfigServerQuestion();
+                    uneFormConfigServ.UrlServiceWeb = UrlServerInit;
+                    uneFormConfigServ.ShowDialog();
+                    _urlServer = uneFormConfigServ.UrlServiceWeb;
+                    monUri = new Uri(UrlServerInit);
+
+                    client.Proxy = WebRequest.GetSystemWebProxy();
+                    monBuilderParams.Append(client.DownloadString(UrlServerInit));
+                }
+
+                
 
                 maQuestion = Newtonsoft.Json.JsonConvert.DeserializeObject<Question>(monBuilderParams.ToString());
             }
