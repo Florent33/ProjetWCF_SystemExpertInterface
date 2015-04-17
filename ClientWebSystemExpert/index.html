@@ -1,10 +1,96 @@
 ﻿<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <title></title>
+    <script type="text/ecmascript" src="Scripts/jquery-2.1.3.min.js"></script>
 </head>
 <body>
-    
+    <form action="Question" method="post">
+        <fieldset>
+            <legend>Système expert</legend>
+            <p>
+                <label for="question_contenu" id="lbl_question_contenu">Question N°<b id="idQuestion"></b>:</label><input type="text" name="question_contenu" value="" />
+            </p>
+            <p>
+                <label for="reponse_contenu" id="lbl_reponse_contenu">Votre réponse :</label><input type="text" name="reponse_contenu" value="" />
+            </p>
+            <input type="hidden" name="lienRessource" value="" />
+            <input type="hidden" name="lienRessourceNext" value="" />
+            <input type="button" name="btn_repondre" id="btn_repondre" value="Répondre" />
+            <input type="text" name="urlWebService" id="urlWebService" value="http://localhost:2441/Quest/" />
+        </fieldset>
+    </form>
+
+    <script type="text/ecmascript">
+        $(document).ready(function () {
+            function InitQuestNext() {
+                QuestionNext();
+            }
+
+            function QuestionNext() {
+                $.ajax({
+                    url: $("#urlWebService").val()+"Question?question_id=0",
+                    method: "GET",
+                    contentType: "text/html",
+                    accept: "text/html",
+                    success: function (xml, statut) {
+                        if (tr$("lienRessourceNext", xml).val() != "") {
+                            $("#question_contenu").val($("QuestionContenu", xml).val());
+                            $("#reponse_contenu").val($("ReponseContenu", xml).val());
+                            $("#lienRessource").val($("lienRessource", xml).val());
+                            $("#lienRessourceNext").val($("lienRessourceNext", xml).val());
+                        }
+                        else {
+                            alert("Il n'y a pas de question en attente de réponse !");
+                        }
+                    },
+
+                    error: function (error) {
+                        alert(error);
+                    }
+                });
+            }
+
+            $("#btn_repondre").click(function RepondreQuestion(event) {
+                $.ajax({
+                    url: $("#urlWebService").val() + $("#lienRessource").val(),
+                    method: "PUT",
+                    beforeSend: function(xhrObj)                    {
+                        xhrObj.setRequestHeader("Content-Type", "text/html; charset=utf-8");
+                        xhrObj.setRequestHeader("Accept","text/xml");
+                    },
+                    data: "question_contenu=" + $("#question_contenu").val().replace('"', '\"') + "&reponse_contenu=" + $("#reponse_contenu").val().replace('"', '\"'),
+                    success: function (xml, statut) {
+                        if (tr$("lienRessourceNext", xml).val() != "") {
+                            $("#question_contenu").val($("QuestionContenu", xml).val());
+                            $("#reponse_contenu").val($("ReponseContenu", xml).val());
+                            $("#lienRessource").val($("lienRessource", xml).val());
+                            $("#lienRessourceNext").val($("lienRessourceNext", xml).val());
+                        }
+                        else {
+                            alert("Il n'y a plus de question !");
+                        }
+
+                    },
+
+                    error: function (error) {
+                    }
+                });
+            });
+
+            $("#formPost").submit(function (event) {
+                if ($('#adresse_serviceweb').val().length <= 0) {
+                    event.preventDefault();
+                    alert("Envoi Annulé ! url='" + $('#adresse_serviceweb').val() + "'");
+                }
+                else {
+                    $('form').attr('action', $('#adresse_serviceweb').val())
+                }
+            });
+
+            InitQuestNext();
+        });
+    </script>
 </body>
 </html>

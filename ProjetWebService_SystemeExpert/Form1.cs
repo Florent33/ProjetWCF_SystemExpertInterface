@@ -21,7 +21,40 @@ namespace ProjetWebService_SystemeExpert
 
         private void question_textBox1_TextChanged(object sender, EventArgs e) { }
         private void reponse_textBox2_TextChanged(object sender, EventArgs e) { }
-        private void Form1_Load(object sender, EventArgs e) { }
+        private void Form1_Load(object sender, EventArgs e) {
+            StringBuilder monBuilderParams = new StringBuilder();
+
+            using (var client = new System.Net.WebClient())
+            {
+                client.Headers.Add("Content-Type", "text/html");
+                client.Headers.Add("Accept", "text/json");
+                client.Encoding = UTF8Encoding.UTF8;
+                monBuilderParams.Append(client.DownloadString("http://localhost:2441/Quest/Question?question_id=0"));
+
+                maQuestion = Newtonsoft.Json.JsonConvert.DeserializeObject<Question>(monBuilderParams.ToString());
+            }
+
+            txt_question.Text = "";
+            txt_reponse.Text = "";
+        }
+
+        private void InitialiserQuestionDepartFictive()
+        {
+            StringBuilder monBuilderParams = new StringBuilder();
+
+            using (var client = new System.Net.WebClient())
+            {
+                client.Headers.Add("Content-Type", "text/html");
+                client.Headers.Add("Accept", "text/json");
+                client.Encoding = UTF8Encoding.UTF8;
+                monBuilderParams.Append(client.DownloadString("http://localhost:2441/Quest/Question?question_id=0"));
+
+                maQuestion = Newtonsoft.Json.JsonConvert.DeserializeObject<Question>(monBuilderParams.ToString());
+            }
+
+            txt_question.Text = "";
+            txt_reponse.Text = "";
+        }
 
         public Form1()
         {
@@ -30,50 +63,80 @@ namespace ProjetWebService_SystemeExpert
 
         private void prochaineQuestion_button1_Click(object sender, EventArgs e)
         {
-            this.txt_question.Text = "Récupérer la réponse...";
+            if (string.IsNullOrEmpty(maQuestion.LienRessourceNext))
+            {
+                MessageBox.Show("Il n'y a plus de question");
+            }
+            else
+            {
+                StringBuilder monBuilderParams = new StringBuilder();
 
-            maQuestion = HttpServiceWeb.GetQuestion(1, "GET", "text/html", "text/xml");
-            txt_question.Text = maQuestion.QuestionContenu;
-            txt_reponse.Text = maQuestion.ReponseString.ReponseContenu;
+                using (var client = new System.Net.WebClient())
+                {
+                    client.Headers.Add("Content-Type", "text/html");
+                    client.Headers.Add("Accept", "text/json");
+                    client.Encoding = UTF8Encoding.UTF8;
+                    monBuilderParams.Append(client.DownloadString(maQuestion.LienRessourceNext));
+
+                    maQuestion = Newtonsoft.Json.JsonConvert.DeserializeObject<Question>(monBuilderParams.ToString());
+                }
+
+                if (string.IsNullOrEmpty(maQuestion.LienRessourceNext))
+                {
+                    MessageBox.Show("Il n'y a plus de question");
+                    InitialiserQuestionDepartFictive();
+                }
+                else
+                {
+                    txt_question.Text = maQuestion.QuestionContenu;
+                    txt_reponse.Text = "";
+                }
+            }
         }
+
 
         private void envoyerReponse_button2_Click(object sender, EventArgs e)
         {
-            //maQuestion = HttpServiceWeb.
-            //txt_question.Text = maQuestion.QuestionContenu;
-            //txt_reponse.Text = maQuestion.ReponseString.ReponseContenu;
+            NameValueCollection parametres = new NameValueCollection();
 
-            //maReponse = HttpServiceWeb.GetReponse("1", "PUT", null, "text/xml");
-            //txt_reponse.Text = maReponse.ReponseContenu;
+            parametres.Add("question_id", maQuestion.Id);
+            parametres.Add("question_contenu", maQuestion.QuestionContenu);
+            parametres.Add("reponse_contenu", txt_reponse.Text);
 
-            //string urlPath = "http://localhost:8002/Question?question_id=1";
-            //string request = urlPath + "indexTest.html/org/put_org_form";
-            //WebRequest webRequest = WebRequest.Create(request);
-            //webRequest.Method = "PUT";
-            //webRequest.ContentType = "application/x-www-form-urlencoded; charset=utf-8";
-            //webRequest.ContentLength = 65;
-            ////WebResponse webResponse = webRequest.GetReponse();
-            ////reponse_textBox2.Text
+            byte[] encodageBytesParams;
+            StringBuilder monBuilderParams = new StringBuilder();
+            bool premierParamPasse = true;
 
-            NameValueCollection lesParametres = new NameValueCollection();
-
-            lesParametres.Add("question_id", maQuestion.Id);
-            lesParametres.Add("question_contenu", maQuestion.QuestionContenu);
-            lesParametres.Add("reponse_contenu", txt_reponse.Text);
-
-            int CodeRetour = 200;
-            HttpWebRequest uneReq = HttpServiceWeb.ExecuterReqHttp(maQuestion.LienRessource, out CodeRetour, "PUT", "text/json", "text/json", lesParametres);
-
-            if (!(CodeRetour >= 200 && CodeRetour < 200))
+            foreach (var item in parametres.AllKeys)
             {
-                MessageBox.Show(((HttpWebResponse)uneReq.GetResponse()).StatusDescription);
+                if (premierParamPasse)
+                {
+                    monBuilderParams.Append(string.Format("{0}={1}", item, parametres[item]));
+                    premierParamPasse = false;
+                }
+                else
+                {
+                    monBuilderParams.Append(string.Format("&{0}={1}", item, parametres[item]));
+                }
             }
 
-            this.txt_question.Text = "Récupérer la réponse...";
+            UTF8Encoding utf8 = new UTF8Encoding();
+            encodageBytesParams = utf8.GetBytes(monBuilderParams.ToString());
+            byte[] repReq;
 
-            maQuestion = HttpServiceWeb.GetQuestion(maQuestion.LienRessourceNext, "GET", null, "text/xml");
+            using (var client = new System.Net.WebClient())
+            {
+                client.Headers.Add("Content-Type", "application/x-www-form-urlencoded");
+                client.Headers.Add("Accept", "text/json");
+                repReq = client.UploadData(maQuestion.LienRessource, "PUT", encodageBytesParams);
+            }
+
+            monBuilderParams = new StringBuilder(utf8.GetString(repReq));
+
+            maQuestion = Newtonsoft.Json.JsonConvert.DeserializeObject<Question>(monBuilderParams.ToString());
+
             txt_question.Text = maQuestion.QuestionContenu;
-            txt_reponse.Text = maQuestion.ReponseString.ReponseContenu;
+            txt_reponse.Text = "";
         }
     }
 }

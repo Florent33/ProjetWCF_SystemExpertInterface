@@ -74,17 +74,20 @@ namespace ProjetWebService_SystemeExpert
 
         private static void DefinirParametresCache(HttpWebRequest monReq, NameValueCollection parametres)
         {
-            Stream mesDatas = null;
-            byte[] encodageBytesParams = GenererParametresEncodeBytes(monReq, parametres, ref mesDatas);
+            monReq.AllowWriteStreamBuffering = true;
+            //monReq.AllowReadStreamBuffering = true;
+            using (Stream mesDatas = monReq.GetRequestStream())
+            {
 
-            mesDatas.Write(encodageBytesParams, 0, encodageBytesParams.Length);
-            mesDatas.Close();
+                byte[] encodageBytesParams = GenererParametresEncodeBytes(monReq, parametres);
+
+                mesDatas.Write(encodageBytesParams, 0, encodageBytesParams.Length);
+            }
         }
 
-        private static byte[] GenererParametresEncodeBytes(HttpWebRequest monReq, NameValueCollection parametres, ref Stream mesDatas)
+        private static byte[] GenererParametresEncodeBytes(HttpWebRequest monReq, NameValueCollection parametres)
         {
             byte[] encodageBytesParams;
-            mesDatas = monReq.GetRequestStream();
             StringBuilder monBuilderParams = new StringBuilder();
             bool premierParamPasse = true;
 
@@ -121,17 +124,17 @@ namespace ProjetWebService_SystemeExpert
 
         public static Question GetQuestion(int idQuestion, string metodeRequete = null, string contentType = null, string representationTexte = null)
         {
-            HttpWebRequest monReq = ExecuterReqHttp(string.Format("http://localhost:52810/i2037/Question?question_id={0}", idQuestion), metodeRequete, contentType, representationTexte);
+            HttpWebRequest monReq = ExecuterReqHttp(string.Format("http://localhost:2441/Quest/Question?question_id={0}", idQuestion), metodeRequete, contentType, representationTexte);
 
             StringBuilder chaineReponseBuilded = new StringBuilder();
             XmlSerializer xs;
 
             xs = new XmlSerializer(typeof(Question));
+
+            Question uneQuestion;
+
+            uneQuestion = Newtonsoft.Json.JsonConvert.DeserializeObject<Question>(ExtraireReponseBrut(monReq));
             
-            TextReader monTextReader = new StreamReader(monReq.GetResponse().GetResponseStream(), Encoding.UTF8);
-
-
-            Question uneQuestion = Newtonsoft.Json.JsonConvert.DeserializeObject<Question>(ExtraireReponseBrut(monReq));
 
             //Question maQuestion = (Question)xs.Deserialize(monTextReader);
 
@@ -147,9 +150,16 @@ namespace ProjetWebService_SystemeExpert
 
             xs = new XmlSerializer(typeof(Question));
 
-            TextReader monTextReader = new StreamReader(monReq.GetResponse().GetResponseStream());
+            Question maQuestion;
 
-            Question maQuestion = (Question)xs.Deserialize(monTextReader);
+            using (Stream maStream = monReq.GetResponse().GetResponseStream())
+            {
+                TextReader monTextReader = new StreamReader(maStream);
+                maQuestion = (Question)xs.Deserialize(monTextReader);
+            }
+            
+
+            
 
             return maQuestion;
         }
