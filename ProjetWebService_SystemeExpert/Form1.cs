@@ -84,6 +84,8 @@ namespace ProjetWebService_SystemeExpert
 
             txt_question.Text = "";
             txt_reponse.Text = "";
+
+            DesactiverTousLesControlsSaufProchaineQuestion();
         }
 
         public Form1()
@@ -96,6 +98,8 @@ namespace ProjetWebService_SystemeExpert
             if (string.IsNullOrEmpty(maQuestion.LienRessourceNext) || maQuestion.LienRessourceNext.EndsWith("="))
             {
                 MessageBox.Show("Il n'y a plus de question");
+                InitialiserQuestionDepartFictive();
+                DesactiverTousLesControlsSaufProchaineQuestion();
             }
             else
             {
@@ -128,7 +132,24 @@ namespace ProjetWebService_SystemeExpert
                 {
                     txt_question.Text = maQuestion.QuestionContenu;
                     txt_reponse.Text = "";
+                    DesactiverTousLesControlsSaufProchaineQuestion(true);
                 }
+            }
+        }
+
+        private void DesactiverTousLesControlsSaufProchaineQuestion(bool reactive = false)
+        {
+            if (reactive)
+            {
+                txt_question.Enabled = true;
+                txt_reponse.Enabled = true;
+                envoyerReponse_button2.Enabled = true;
+            }
+            else
+            {
+                txt_question.Enabled = false;
+                txt_reponse.Enabled = false;
+                envoyerReponse_button2.Enabled = false;
             }
         }
 
@@ -140,6 +161,7 @@ namespace ProjetWebService_SystemeExpert
             parametres.Add("question_id", maQuestion.Id);
             parametres.Add("question_contenu", maQuestion.QuestionContenu);
             parametres.Add("reponse_contenu", txt_reponse.Text);
+
 
             byte[] encodageBytesParams;
             StringBuilder monBuilderParams = new StringBuilder();
@@ -188,7 +210,10 @@ namespace ProjetWebService_SystemeExpert
             else
             {
                 txt_question.Text = maQuestion.QuestionContenu;
-                txt_reponse.Text = "";
+                txt_reponse.Text = maQuestion.ReponseString.ReponseContenu;
+
+                MessageBox.Show("La réponse a été mise à jour");
+                DesactiverTousLesControlsSaufProchaineQuestion();
             }
         }
 
